@@ -38,6 +38,12 @@ export const BurgerIngredients = ({ ingredients }) => {
           </Tab>
         </ul>
       </nav>
+      {/* Временный список для проверки запроса */}
+      <ul>
+        {ingredients.map((ingredient) => (
+          <li key={ingredient.id}>{ingredient.name}</li>
+        ))}
+      </ul>
     </section>
   );
 };
