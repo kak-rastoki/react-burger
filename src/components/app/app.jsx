@@ -22,7 +22,6 @@ export const App = () => {
       .then((response) => {
         if (response.data.success) {
           setIngredients(response.data.data);
-          console.log(`получены ингредиенты ${response.data.data}`);
         } else {
           setResponseIngredientsError('Не удалось загрузить ингредиенты');
         }
