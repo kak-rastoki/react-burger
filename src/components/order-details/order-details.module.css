@@ -1,0 +1,36 @@
+.order {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  height: 120px;
+  margin: 48px 0 83px;
+}
+
+.icon svg {
+  width: 60px;
+  height: 60px;
+}
+
+.glow {
+  text-shadow: 3px 3px 30px rgb(51 20 255 / 78.1%);
+}
+
+.order p:last-child {
+  margin-bottom: 0;
+}
+
+.order p:first-of-type {
+  margin-bottom: 32px;
+}
+
+.order p:nth-of-type(2) {
+  margin-bottom: 48px;
+}

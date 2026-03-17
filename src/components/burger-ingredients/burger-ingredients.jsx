@@ -1,11 +1,17 @@
-import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import { useState, useRef } from 'react';
+import { Tab, Preloader } from '@krgaa/react-developer-burger-ui-components';
+import { useState, useRef, useCallback, useMemo } from 'react';
 
 import { IngredientCard } from '../ingredient-card/ingredient-card';
 
 import styles from './burger-ingredients.module.css';
 
-export const BurgerIngredients = ({ ingredients, onIngredietnsClick }) => {
+export const BurgerIngredients = ({
+  constructorItems,
+  isLoading,
+  ingredients,
+  onIngredietnsClick,
+  responseError,
+}) => {
   const [currentTab, setCurrentTab] = useState('bun');
   // рефики с заголовками разделов
   const bunRef = useRef(null);
@@ -13,12 +19,23 @@ export const BurgerIngredients = ({ ingredients, onIngredietnsClick }) => {
   const mainRef = useRef(null);
 
   // фильтрация ингредиентов через фильтр
-  const buns = ingredients.filter((ingredient) => ingredient.type === 'bun');
-  const sauces = ingredients.filter((ingredient) => ingredient.type === 'sauce');
-  const mains = ingredients.filter((item) => item.type === 'main');
+  const buns = useMemo(() =>
+    ingredients.filter((ingredient) => ingredient.type === 'bun')
+  );
+  const sauces = useMemo(() =>
+    ingredients.filter((ingredient) => ingredient.type === 'sauce')
+  );
+  const mains = useMemo(() => ingredients.filter((item) => item.type === 'main'));
 
+  const getCount = useCallback((item) => {
+    if (item.type === 'bun') {
+      return constructorItems.bun && constructorItems.bun._id === item._id ? 2 : 0;
+    } else {
+      return constructorItems.filling.filter((fill) => fill._id === item._id).length;
+    }
+  });
   // нажатие на таб : вызывает прокрутку к тек. рефу
-  const onTabClick = (tab) => {
+  const onTabClick = useCallback((tab) => {
     setCurrentTab(tab);
 
     const refMap = {
@@ -28,9 +45,16 @@ export const BurgerIngredients = ({ ingredients, onIngredietnsClick }) => {
     };
 
     refMap[tab].current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  });
 
-  console.log(ingredients);
+  if (isLoading) {
+    return <Preloader />;
+  }
+
+  if (responseError) {
+    return <div className="text text_type_main-medium">Ошибка: {responseError}</div>;
+  }
+
   return (
     <section className={styles.burger_ingredients}>
       <nav>
@@ -55,6 +79,7 @@ export const BurgerIngredients = ({ ingredients, onIngredietnsClick }) => {
               key={bun._id}
               ingredient={bun}
               onClick={onIngredietnsClick}
+              count={getCount(bun)}
             />
           ))}
         </ul>
@@ -66,6 +91,7 @@ export const BurgerIngredients = ({ ingredients, onIngredietnsClick }) => {
               key={sauce._id}
               ingredient={sauce}
               onClick={onIngredietnsClick}
+              count={getCount(sauce)}
             />
           ))}
         </ul>
@@ -77,6 +103,7 @@ export const BurgerIngredients = ({ ingredients, onIngredietnsClick }) => {
               key={main._id}
               ingredient={main}
               onClick={onIngredietnsClick}
+              count={getCount(main)}
             />
           ))}
         </ul>
