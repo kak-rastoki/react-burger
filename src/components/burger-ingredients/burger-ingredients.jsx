@@ -5,7 +5,7 @@ import { IngredientCard } from '../ingredient-card/ingredient-card';
 
 import styles from './burger-ingredients.module.css';
 
-export const BurgerIngredients = ({ ingredients }) => {
+export const BurgerIngredients = ({ ingredients, onIngredietnsClick }) => {
   const [currentTab, setCurrentTab] = useState('bun');
   // рефики с заголовками разделов
   const bunRef = useRef(null);
@@ -51,21 +51,33 @@ export const BurgerIngredients = ({ ingredients }) => {
         <h2 ref={bunRef}>Булки</h2>
         <ul className={styles.list}>
           {buns.map((bun) => (
-            <IngredientCard key={bun._id} ingredient={bun} />
+            <IngredientCard
+              key={bun._id}
+              ingredient={bun}
+              onClick={onIngredietnsClick}
+            />
           ))}
         </ul>
 
         <h2 ref={sauceRef}>Соусы</h2>
         <ul className={styles.list}>
           {sauces.map((sauce) => (
-            <IngredientCard key={sauce._id} ingredient={sauce} />
+            <IngredientCard
+              key={sauce._id}
+              ingredient={sauce}
+              onClick={onIngredietnsClick}
+            />
           ))}
         </ul>
 
         <h2 ref={mainRef}>Начинки</h2>
         <ul className={styles.list}>
           {mains.map((main) => (
-            <IngredientCard key={main._id} ingredient={main} />
+            <IngredientCard
+              key={main._id}
+              ingredient={main}
+              onClick={onIngredietnsClick}
+            />
           ))}
         </ul>
       </div>
