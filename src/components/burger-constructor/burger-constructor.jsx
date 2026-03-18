@@ -2,6 +2,7 @@ import {
   ConstructorElement,
   CurrencyIcon,
   Button,
+  DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
 
 import styles from './burger-constructor.module.css';
@@ -44,13 +45,15 @@ export const BurgerConstructor = ({ ingredients, onOrderButtonClick }) => {
       {/* Начинки */}
       <div className={`${styles.notBuns} custom-scroll`}>
         {notBuns.map((item) => (
-          <ConstructorElement
-            key={item._id}
-            isLocked={false}
-            text={item.name}
-            price={item.price}
-            thumbnail={item.image}
-          />
+          <div key={item._id} className="styles.item">
+            <DragIcon type="primary" />
+            <ConstructorElement
+              isLocked={false}
+              text={item.name}
+              price={item.price}
+              thumbnail={item.image}
+            />
+          </div>
         ))}
       </div>
 

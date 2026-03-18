@@ -58,12 +58,11 @@ export const App = () => {
         } else {
           setResponseIngredientsError('Не удалось загрузить ингредиенты');
         }
-        setIsLoading(false);
       })
       .catch((err) => {
         setResponseIngredientsError(err.message);
-        setIsLoading(false);
-      });
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {

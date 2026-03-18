@@ -44,7 +44,7 @@ export function Modal({ children, title, onClose }) {
       >
         <div className={styles.header}>
           <h2 className="text text_type_main-large">{title}</h2>
-          <button className={styles.closeButton} onClick={onClose}>
+          <button className={styles.closeButton} onClick={handleClose}>
             <CloseIcon type="primary" />
           </button>
         </div>
