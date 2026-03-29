@@ -1,5 +1,5 @@
 import { Tab, Preloader } from '@krgaa/react-developer-burger-ui-components';
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 
 import { IngredientCard } from '../ingredient-card/ingredient-card';
 
@@ -17,6 +17,56 @@ export const BurgerIngredients = ({
   const bunRef = useRef(null);
   const sauceRef = useRef(null);
   const mainRef = useRef(null);
+  const ingredientContainerRef = useRef(null);
+
+  // ТЕКУЩИЙ ТАВ ПРИ СКРОЛЕ
+  useEffect(() => {
+    if (isLoading) return;
+    const container = ingredientContainerRef.current;
+    console.log(container);
+
+    if (!container) return;
+
+    const handleScroll = () => {
+      // как в голову пришло так реализовал (
+      const ingredientContainerRect = container?.getBoundingClientRect();
+
+      const bunTitleRect = bunRef.current?.getBoundingClientRect();
+      const sauceTitleRect = sauceRef.current?.getBoundingClientRect();
+      const mainTitleRect = mainRef.current?.getBoundingClientRect();
+
+      const distanceBun = bunTitleRect.top - ingredientContainerRect.top;
+      const distanceSauce = sauceTitleRect.top - ingredientContainerRect.top;
+      const distanceMain = mainTitleRect.top - ingredientContainerRect.top;
+
+      const distances = [
+        { name: 'bun', dist: distanceBun },
+        { name: 'sauce', dist: distanceSauce },
+        { name: 'main', dist: distanceMain },
+      ];
+
+      let activeTab = 'bun';
+      let minDist = Infinity;
+
+      for (const { name, dist } of distances) {
+        if (dist >= 0 && dist < minDist) {
+          minDist = dist;
+          activeTab = name;
+        }
+      }
+      if (minDist === Infinity) {
+        activeTab = distances.reduce((prev, curr) =>
+          curr.dist > prev.dist ? curr : prev
+        ).name;
+      }
+      setCurrentTab(activeTab);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [isLoading, ingredients]);
 
   // фильтрация ингредиентов через фильтр
   const buns = useMemo(() =>
@@ -71,7 +121,10 @@ export const BurgerIngredients = ({
         </ul>
       </nav>
 
-      <div className={`${styles.ingredients} custom-scroll`}>
+      <div
+        ref={ingredientContainerRef}
+        className={`${styles.ingredients} custom-scroll`}
+      >
         <h2 ref={bunRef}>Булки</h2>
         <ul className={styles.list}>
           {buns.map((bun) => (
