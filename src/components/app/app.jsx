@@ -1,11 +1,10 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
 
-import API_URL from '../../utils/constants.js';
+import { useGetIngredientsQuery } from '../../services/api/ingredientsApi';
 import { IngredientDetail } from '../ingredient-details/ingredient-details.jsx';
 import { Modal } from '../modal/modal.jsx';
 import { OrderDetails } from '../order-details/order-details.jsx';
@@ -13,11 +12,18 @@ import { OrderDetails } from '../order-details/order-details.jsx';
 import styles from './app.module.css';
 
 export const App = () => {
-  const [ingredients, setIngredients] = useState([]);
-  const [responseIngredientsError, setResponseIngredientsError] = useState(null);
+  const {
+    data: ingredientsData,
+    isLoading,
+    error: ingredientsError,
+  } = useGetIngredientsQuery();
+  // const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
+  const ingredients = ingredientsData?.data || [];
+  const responseIngredientsError = ingredientsError?.message || null;
+
   const [selectedIngredient, setSelectedIngredient] = useState(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [orderNumber, setOrderNumber] = useState(null);
 
   const [constructorItems, setConstructorItems] = useState({
     bun: null,
@@ -47,23 +53,6 @@ export const App = () => {
     id: '034536',
     isCompleted: false,
   };
-
-  useEffect(() => {
-    // Загрузка ингридиентов с API
-    axios
-      .get(`${API_URL}/ingredients`)
-      .then((response) => {
-        if (response.data.success) {
-          setIngredients(response.data.data);
-        } else {
-          setResponseIngredientsError('Не удалось загрузить ингредиенты');
-        }
-      })
-      .catch((err) => {
-        setResponseIngredientsError(err.message);
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
 
   useEffect(() => {
     if (ingredients.length > 0) {
