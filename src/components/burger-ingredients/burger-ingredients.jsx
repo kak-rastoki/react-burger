@@ -1,12 +1,14 @@
 import { Tab, Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
+import { selectIngredientCount } from '@/services/constructor/constructorSlice';
 
 import { IngredientCard } from '../ingredient-card/ingredient-card';
 
 import styles from './burger-ingredients.module.css';
 
 export const BurgerIngredients = ({
-  constructorItems,
   isLoading,
   ingredients,
   onIngredietnsClick,
@@ -18,6 +20,10 @@ export const BurgerIngredients = ({
   const sauceRef = useRef(null);
   const mainRef = useRef(null);
   const ingredientContainerRef = useRef(null);
+  // const constructorItems = useSelector(selectConstructorItems) ?? { bun: null, filling: [] };
+  const ingredientCount = useSelector(selectIngredientCount);
+
+  const getCount = (item) => ingredientCount[item._id] || 0;
 
   // ТЕКУЩИЙ ТАВ ПРИ СКРОЛЕ
   useEffect(() => {
@@ -69,21 +75,26 @@ export const BurgerIngredients = ({
   }, [isLoading, ingredients]);
 
   // фильтрация ингредиентов через фильтр
-  const buns = useMemo(() =>
-    ingredients.filter((ingredient) => ingredient.type === 'bun')
+  const buns = useMemo(
+    () => ingredients.filter((ingredient) => ingredient.type === 'bun'),
+    [ingredients]
   );
-  const sauces = useMemo(() =>
-    ingredients.filter((ingredient) => ingredient.type === 'sauce')
+  const sauces = useMemo(
+    () => ingredients.filter((ingredient) => ingredient.type === 'sauce'),
+    [ingredients]
   );
-  const mains = useMemo(() => ingredients.filter((item) => item.type === 'main'));
+  const mains = useMemo(
+    () => ingredients.filter((item) => item.type === 'main'),
+    [ingredients]
+  );
 
-  const getCount = useCallback((item) => {
-    if (item.type === 'bun') {
-      return constructorItems.bun && constructorItems.bun._id === item._id ? 2 : 0;
-    } else {
-      return constructorItems.filling.filter((fill) => fill._id === item._id).length;
-    }
-  });
+  // const getCount = useCallback((item) => {
+  //   if (item.type === 'bun') {
+  //     return constructorItems.bun && constructorItems.bun._id === item._id ? 2 : 0;
+  //   } else {
+  //     return constructorItems.filling.filter((fill) => fill._id === item._id).length;
+  //   }
+  // });
   // нажатие на таб : вызывает прокрутку к тек. рефу
   const onTabClick = useCallback((tab) => {
     setCurrentTab(tab);

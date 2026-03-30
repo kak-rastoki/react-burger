@@ -4,30 +4,51 @@ import {
   Button,
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
+import { useSelector } from 'react-redux';
+
+import {
+  selectConstructorItems,
+  selectTotalPrice,
+  selectBun,
+  selectFilling,
+} from '@/services/constructor/constructorSlice';
 
 import styles from './burger-constructor.module.css';
 
-export const BurgerConstructor = ({ ingredients, onOrderButtonClick }) => {
-  console.log(ingredients);
+export const BurgerConstructor = ({ onOrderButtonClick, isOrderLoading }) => {
+  // const [filling,setFilling] = useState(null);
+  // const [bun,setBun] =useState(null);
+  const constructorItems = useSelector(selectConstructorItems);
+  const totalPrice = useSelector(selectTotalPrice);
+  const bun = useSelector(selectBun);
+  const filling = useSelector(selectFilling);
+  console.log(`проверяю бан  - ${bun}`);
 
-  if (!ingredients) {
+  console.log(`Данные конструктора: ${constructorItems}`);
+
+  if (!bun) {
+    return <div className="text text_type_main-medium">Добавьте булку</div>;
+  }
+
+  if (!constructorItems) {
     return <div className="text text_type_main-medium">Добавьте ингредиенты</div>;
   }
 
-  if (ingredients.length === 0) {
+  if (constructorItems === 0) {
+    // поменять потом
     return (
       <div className="text text_type_main-medium">Идет загрузка ингредиентов...</div>
     );
   }
 
   // фильтрация ингредиентов через фильтр
-  const buns = ingredients.filter((ingredient) => ingredient.type === 'bun');
-  const bun = buns[0];
+  // const buns = constuctorItems.filter((ingredient) => ingredient.type === 'bun');
+  // const bun = buns[0];
 
   // тестовый массив из начинок
-  const notBuns = ingredients.filter((item) => item.type !== 'bun').slice(6, 12);
+  // const notBuns = ingredients.filter((item) => item.type !== 'bun').slice(6, 12);
 
-  const totalPrice = notBuns.reduce((acc, item) => acc + item.price, 0) + bun.price * 2;
+  // const totalPrice = filling.reduce((acc, item) => acc + item.price, 0) + bun.price * 2;
 
   return (
     <section className={`${styles.burger_constructor} pt-10`}>
@@ -44,7 +65,7 @@ export const BurgerConstructor = ({ ingredients, onOrderButtonClick }) => {
 
       {/* Начинки */}
       <div className={`${styles.notBuns} custom-scroll`}>
-        {notBuns.map((item) => (
+        {filling.map((item) => (
           <div key={item._id} className="styles.item">
             <DragIcon type="primary" />
             <ConstructorElement
@@ -76,8 +97,9 @@ export const BurgerConstructor = ({ ingredients, onOrderButtonClick }) => {
           size="medium"
           htmlType="button"
           onClick={onOrderButtonClick}
+          disabled={isOrderLoading}
         >
-          Оформить заказ
+          {isOrderLoading ? 'Оформляем...' : 'Оформить заказ'}
         </Button>
       </div>
     </section>

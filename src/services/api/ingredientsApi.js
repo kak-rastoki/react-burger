@@ -10,7 +10,7 @@ export const ingredientsApi = createApi({
       query: () => '/ingredients',
     }),
 
-    createOreder: builder.mutation({
+    createOrder: builder.mutation({
       query: (orderData) => ({
         url: '/orders',
         method: 'POST',

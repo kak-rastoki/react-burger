@@ -1,11 +1,13 @@
-import { configureStore, combineSlices } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 
 import { ingredientsApi } from './api/ingredientsApi';
-
-const rootReducer = combineSlices(ingredientsApi);
+import constructorReducer from './constructor/constructorSlice';
 
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: {
+    [ingredientsApi.reducerPath]: ingredientsApi.reducer,
+    burgerConstructor: constructorReducer,
+  },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(ingredientsApi.middleware),
 });
