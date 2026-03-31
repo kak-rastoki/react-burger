@@ -2,18 +2,17 @@ import { Tab, Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
+import { useGetIngredientsQuery } from '@/services/api/ingredientsApi';
 import { selectIngredientCount } from '@/services/constructor/constructorSlice';
 
 import { IngredientCard } from '../ingredient-card/ingredient-card';
 
 import styles from './burger-ingredients.module.css';
 
-export const BurgerIngredients = ({
-  isLoading,
-  ingredients,
-  onIngredietnsClick,
-  responseError,
-}) => {
+export const BurgerIngredients = ({ onIngredietnsClick }) => {
+  const { data, isLoading, error } = useGetIngredientsQuery();
+  const ingredients = data?.data || [];
+  const responseError = error?.message || null;
   const [currentTab, setCurrentTab] = useState('bun');
   // рефики с заголовками разделов
   const bunRef = useRef(null);

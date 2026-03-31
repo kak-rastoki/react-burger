@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Экшены для работы с начинками и булками
-import { selectBun, selectFilling } from '@/services/constructor/constructorSlice.js';
+import {
+  selectBun,
+  selectFilling,
+  clearConstructor,
+} from '@/services/constructor/constructorSlice.js';
 // Экшены для выбранного ингредиента
 import {
   setIngredientDetails,
@@ -13,10 +17,7 @@ import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
 
-import {
-  useGetIngredientsQuery,
-  useCreateOrderMutation,
-} from '../../services/api/ingredientsApi';
+import { useCreateOrderMutation } from '../../services/api/ingredientsApi';
 import { IngredientDetail } from '../ingredient-details/ingredient-details.jsx';
 import { Modal } from '../modal/modal.jsx';
 import { OrderDetails } from '../order-details/order-details.jsx';
@@ -25,15 +26,9 @@ import styles from './app.module.css';
 
 export const App = () => {
   const dispatch = useDispatch();
-  const {
-    data: ingredientsData,
-    isLoading,
-    error: ingredientsError,
-  } = useGetIngredientsQuery();
 
   const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
-  const ingredients = ingredientsData?.data || [];
-  const responseIngredientsError = ingredientsError?.message || null;
+
   const selectedIngredient = useSelector(selectCurrentIngredient);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [currentOrder, setCurrentOrder] = useState(null);
@@ -61,6 +56,7 @@ export const App = () => {
       const response = await createOrder({ ingredients: orderIds }).unwrap();
       setCurrentOrder(response.order.number);
       setIsOrderModalOpen(true);
+      dispatch(clearConstructor()); //авто очистка после заказа
     } catch (err) {
       console.error('Ошибка при создании заказа:', err);
       alert('Ошибка при создании заказа: ' + err.message);
@@ -80,12 +76,7 @@ export const App = () => {
         Соберите бургер
       </h1>
       <main className={`${styles.main} pl-5 pr-5 `}>
-        <BurgerIngredients
-          isLoading={isLoading}
-          ingredients={ingredients}
-          onIngredietnsClick={handleIngredientClick}
-          responseError={responseIngredientsError}
-        />
+        <BurgerIngredients onIngredietnsClick={handleIngredientClick} />
         <BurgerConstructor
           isOrderLoading={isOrderLoading}
           onOrderButtonClick={handleOrderClick}

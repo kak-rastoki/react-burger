@@ -23,10 +23,14 @@ export const constructorSlice = createSlice({
       const moved = state.filling.splice(fromId, 1)[0];
       state.filling.splice(toId, 0, moved);
     },
+    clearConstructor: (state) => {
+      state.bun = null;
+      state.filling = [];
+    },
   },
 });
 
-export const { addBun, addFilling, removeFilling, moveFilling } =
+export const { addBun, addFilling, removeFilling, moveFilling, clearConstructor } =
   constructorSlice.actions;
 
 export default constructorSlice.reducer;
