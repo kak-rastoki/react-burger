@@ -34,38 +34,23 @@ export const BurgerIngredients = ({
     if (!container) return;
 
     const handleScroll = () => {
-      // как в голову пришло так реализовал (
       const ingredientContainerRect = container?.getBoundingClientRect();
-
       const bunTitleRect = bunRef.current?.getBoundingClientRect();
       const sauceTitleRect = sauceRef.current?.getBoundingClientRect();
       const mainTitleRect = mainRef.current?.getBoundingClientRect();
-
       const distanceBun = bunTitleRect.top - ingredientContainerRect.top;
       const distanceSauce = sauceTitleRect.top - ingredientContainerRect.top;
       const distanceMain = mainTitleRect.top - ingredientContainerRect.top;
-
       const distances = [
-        { name: 'bun', dist: distanceBun },
-        { name: 'sauce', dist: distanceSauce },
-        { name: 'main', dist: distanceMain },
+        { name: 'bun', dist: Math.abs(distanceBun) },
+        { name: 'sauce', dist: Math.abs(distanceSauce) },
+        { name: 'main', dist: Math.abs(distanceMain) },
       ];
+      const closestTab = distances.reduce((prev, curr) =>
+        curr.dist < prev.dist ? curr : prev
+      ).name;
 
-      let activeTab = 'bun';
-      let minDist = Infinity;
-
-      for (const { name, dist } of distances) {
-        if (dist >= 0 && dist < minDist) {
-          minDist = dist;
-          activeTab = name;
-        }
-      }
-      if (minDist === Infinity) {
-        activeTab = distances.reduce((prev, curr) =>
-          curr.dist > prev.dist ? curr : prev
-        ).name;
-      }
-      setCurrentTab(activeTab);
+      setCurrentTab(closestTab);
     };
 
     container.addEventListener('scroll', handleScroll);
@@ -88,14 +73,7 @@ export const BurgerIngredients = ({
     [ingredients]
   );
 
-  // const getCount = useCallback((item) => {
-  //   if (item.type === 'bun') {
-  //     return constructorItems.bun && constructorItems.bun._id === item._id ? 2 : 0;
-  //   } else {
-  //     return constructorItems.filling.filter((fill) => fill._id === item._id).length;
-  //   }
-  // });
-  // нажатие на таб : вызывает прокрутку к тек. рефу
+  // прокрутка к тек. рефу
   const onTabClick = useCallback((tab) => {
     setCurrentTab(tab);
 

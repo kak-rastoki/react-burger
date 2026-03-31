@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+// Экшены для работы с начинками и булками
+import { selectBun, selectFilling } from '@/services/constructor/constructorSlice.js';
+// Экшены для выбранного ингредиента
 import {
-  addBun,
-  addFilling,
-  selectBun,
-  selectFilling,
-} from '@/services/constructor/constructorSlice.js';
+  setIngredientDetails,
+  clearIngredientDetails,
+  selectCurrentIngredient,
+} from '@/services/ingredient/ingredientSlice';
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
@@ -32,27 +34,20 @@ export const App = () => {
   const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
   const ingredients = ingredientsData?.data || [];
   const responseIngredientsError = ingredientsError?.message || null;
-
-  const [selectedIngredient, setSelectedIngredient] = useState(null);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false); // заменить на createOrder
+  const selectedIngredient = useSelector(selectCurrentIngredient);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [currentOrder, setCurrentOrder] = useState(null);
 
   const bun = useSelector(selectBun);
   const filling = useSelector(selectFilling);
 
-  // const buns = ingredients.filter((ingredient) => ingredient.type === 'bun');
-  // const [constructorItems, setConstructorItems] = useState({
-  //   bun: buns[0],
-  //   filling: ingredients.filter((item) => item.type !== 'bun').slice(6, 12),
-  // });
-
   // Модалка ингредиента
   const handleIngredientClick = (ingredient) => {
-    setSelectedIngredient(ingredient);
+    dispatch(setIngredientDetails(ingredient));
   };
 
   const closeIngredientModal = () => {
-    setSelectedIngredient(null);
+    dispatch(clearIngredientDetails());
   };
 
   // Модалка ордера
@@ -76,19 +71,6 @@ export const App = () => {
     setIsOrderModalOpen(false);
     setCurrentOrder(null);
   };
-
-  useEffect(() => {
-    if (ingredients.length > 0) {
-      const bunItem = ingredients.find((item) => item.type === 'bun');
-      if (bunItem && !bun) {
-        dispatch(addBun(bunItem));
-      }
-      const fillingItems = ingredients.filter((item) => item.type !== 'bun').slice(0, 6);
-      fillingItems.forEach((item) => {
-        dispatch(addFilling(item));
-      });
-    }
-  }, [ingredients, dispatch, bun]);
 
   return (
     <div className={styles.app}>
