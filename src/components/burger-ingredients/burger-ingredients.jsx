@@ -1,40 +1,78 @@
 import { Tab, Preloader } from '@krgaa/react-developer-burger-ui-components';
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
+import { useGetIngredientsQuery } from '@/services/api/ingredientsApi';
+import { selectIngredientCount } from '@/services/constructor/constructorSlice';
 
 import { IngredientCard } from '../ingredient-card/ingredient-card';
 
 import styles from './burger-ingredients.module.css';
 
-export const BurgerIngredients = ({
-  constructorItems,
-  isLoading,
-  ingredients,
-  onIngredietnsClick,
-  responseError,
-}) => {
+export const BurgerIngredients = ({ onIngredietnsClick }) => {
+  const { data, isLoading, error } = useGetIngredientsQuery();
+  const ingredients = data?.data || [];
+  const responseError = error?.message || null;
   const [currentTab, setCurrentTab] = useState('bun');
   // рефики с заголовками разделов
   const bunRef = useRef(null);
   const sauceRef = useRef(null);
   const mainRef = useRef(null);
+  const ingredientContainerRef = useRef(null);
+  // const constructorItems = useSelector(selectConstructorItems) ?? { bun: null, filling: [] };
+  const ingredientCount = useSelector(selectIngredientCount);
+
+  const getCount = (item) => ingredientCount[item._id] || 0;
+
+  // ТЕКУЩИЙ ТАВ ПРИ СКРОЛЕ
+  useEffect(() => {
+    if (isLoading) return;
+    const container = ingredientContainerRef.current;
+    console.log(container);
+
+    if (!container) return;
+
+    const handleScroll = () => {
+      const ingredientContainerRect = container?.getBoundingClientRect();
+      const bunTitleRect = bunRef.current?.getBoundingClientRect();
+      const sauceTitleRect = sauceRef.current?.getBoundingClientRect();
+      const mainTitleRect = mainRef.current?.getBoundingClientRect();
+      const distanceBun = bunTitleRect.top - ingredientContainerRect.top;
+      const distanceSauce = sauceTitleRect.top - ingredientContainerRect.top;
+      const distanceMain = mainTitleRect.top - ingredientContainerRect.top;
+      const distances = [
+        { name: 'bun', dist: Math.abs(distanceBun) },
+        { name: 'sauce', dist: Math.abs(distanceSauce) },
+        { name: 'main', dist: Math.abs(distanceMain) },
+      ];
+      const closestTab = distances.reduce((prev, curr) =>
+        curr.dist < prev.dist ? curr : prev
+      ).name;
+
+      setCurrentTab(closestTab);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [isLoading, ingredients]);
 
   // фильтрация ингредиентов через фильтр
-  const buns = useMemo(() =>
-    ingredients.filter((ingredient) => ingredient.type === 'bun')
+  const buns = useMemo(
+    () => ingredients.filter((ingredient) => ingredient.type === 'bun'),
+    [ingredients]
   );
-  const sauces = useMemo(() =>
-    ingredients.filter((ingredient) => ingredient.type === 'sauce')
+  const sauces = useMemo(
+    () => ingredients.filter((ingredient) => ingredient.type === 'sauce'),
+    [ingredients]
   );
-  const mains = useMemo(() => ingredients.filter((item) => item.type === 'main'));
+  const mains = useMemo(
+    () => ingredients.filter((item) => item.type === 'main'),
+    [ingredients]
+  );
 
-  const getCount = useCallback((item) => {
-    if (item.type === 'bun') {
-      return constructorItems.bun && constructorItems.bun._id === item._id ? 2 : 0;
-    } else {
-      return constructorItems.filling.filter((fill) => fill._id === item._id).length;
-    }
-  });
-  // нажатие на таб : вызывает прокрутку к тек. рефу
+  // прокрутка к тек. рефу
   const onTabClick = useCallback((tab) => {
     setCurrentTab(tab);
 
@@ -71,7 +109,10 @@ export const BurgerIngredients = ({
         </ul>
       </nav>
 
-      <div className={`${styles.ingredients} custom-scroll`}>
+      <div
+        ref={ingredientContainerRef}
+        className={`${styles.ingredients} custom-scroll`}
+      >
         <h2 ref={bunRef}>Булки</h2>
         <ul className={styles.list}>
           {buns.map((bun) => (

@@ -1,11 +1,23 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
+// Экшены для работы с начинками и булками
+import {
+  selectBun,
+  selectFilling,
+  clearConstructor,
+} from '@/services/constructor/constructorSlice.js';
+// Экшены для выбранного ингредиента
+import {
+  setIngredientDetails,
+  clearIngredientDetails,
+  selectCurrentIngredient,
+} from '@/services/ingredient/ingredientSlice';
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
 
-import API_URL from '../../utils/constants.js';
+import { useCreateOrderMutation } from '../../services/api/ingredientsApi';
 import { IngredientDetail } from '../ingredient-details/ingredient-details.jsx';
 import { Modal } from '../modal/modal.jsx';
 import { OrderDetails } from '../order-details/order-details.jsx';
@@ -13,68 +25,48 @@ import { OrderDetails } from '../order-details/order-details.jsx';
 import styles from './app.module.css';
 
 export const App = () => {
-  const [ingredients, setIngredients] = useState([]);
-  const [responseIngredientsError, setResponseIngredientsError] = useState(null);
-  const [selectedIngredient, setSelectedIngredient] = useState(null);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useDispatch();
 
-  const [constructorItems, setConstructorItems] = useState({
-    bun: null,
-    filling: [],
-  });
+  const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
+
+  const selectedIngredient = useSelector(selectCurrentIngredient);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState(null);
+
+  const bun = useSelector(selectBun);
+  const filling = useSelector(selectFilling);
 
   // Модалка ингредиента
   const handleIngredientClick = (ingredient) => {
-    setSelectedIngredient(ingredient);
+    dispatch(setIngredientDetails(ingredient));
   };
 
   const closeIngredientModal = () => {
-    setSelectedIngredient(null);
+    dispatch(clearIngredientDetails());
   };
 
   // Модалка ордера
-  const handleOrderClick = () => {
-    setIsOrderModalOpen(true);
+  const handleOrderClick = async () => {
+    if (!bun) {
+      alert('Заказ не может быть сформирован без булки');
+      return;
+    }
+    const orderIds = [bun._id, ...filling.map((item) => item._id), bun._id];
+    try {
+      const response = await createOrder({ ingredients: orderIds }).unwrap();
+      setCurrentOrder(response.order.number);
+      setIsOrderModalOpen(true);
+      dispatch(clearConstructor()); //авто очистка после заказа
+    } catch (err) {
+      console.error('Ошибка при создании заказа:', err);
+      alert('Ошибка при создании заказа: ' + err.message);
+    }
   };
 
   const closeOrderModal = () => {
     setIsOrderModalOpen(false);
+    setCurrentOrder(null);
   };
-
-  const testOrder = {
-    // имитирую объект ордера ,чтобы тренировать пропсы
-    id: '034536',
-    isCompleted: false,
-  };
-
-  useEffect(() => {
-    // Загрузка ингридиентов с API
-    axios
-      .get(`${API_URL}/ingredients`)
-      .then((response) => {
-        if (response.data.success) {
-          setIngredients(response.data.data);
-        } else {
-          setResponseIngredientsError('Не удалось загрузить ингредиенты');
-        }
-      })
-      .catch((err) => {
-        setResponseIngredientsError(err.message);
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (ingredients.length > 0) {
-      const bun = ingredients.find((item) => item.type === 'bun'); // поиск первй булки
-      const filling = ingredients.filter((item) => item.type !== 'bun').slice(6, 12);
-      setConstructorItems({
-        bun: bun || null,
-        filling: filling,
-      });
-    }
-  }, [ingredients]);
 
   return (
     <div className={styles.app}>
@@ -84,15 +76,9 @@ export const App = () => {
         Соберите бургер
       </h1>
       <main className={`${styles.main} pl-5 pr-5 `}>
-        <BurgerIngredients
-          constructorItems={constructorItems}
-          isLoading={isLoading}
-          ingredients={ingredients}
-          onIngredietnsClick={handleIngredientClick}
-          responseError={responseIngredientsError}
-        />
+        <BurgerIngredients onIngredietnsClick={handleIngredientClick} />
         <BurgerConstructor
-          ingredients={ingredients}
+          isOrderLoading={isOrderLoading}
           onOrderButtonClick={handleOrderClick}
         />
       </main>
@@ -104,7 +90,7 @@ export const App = () => {
 
       {isOrderModalOpen && (
         <Modal onClose={closeOrderModal}>
-          <OrderDetails order={testOrder} />
+          <OrderDetails orderNumber={currentOrder} />
         </Modal>
       )}
     </div>
