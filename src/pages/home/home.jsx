@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useCreateOrderMutation } from '@/services/api/ingredientsApi';
 // Экшены для работы с начинками и булками
@@ -9,39 +9,34 @@ import {
   clearConstructor,
 } from '@/services/constructor/constructorSlice.js';
 // Экшены для выбранного ингредиента
-import {
-  setIngredientDetails,
-  clearIngredientDetails,
-  selectCurrentIngredient,
-} from '@/services/ingredient/ingredientSlice';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
-import { IngredientDetail } from '@components/ingredient-details/ingredient-details.jsx';
-import { Modal } from '@components/modal/modal.jsx';
-import { OrderDetails } from '@components/order-details/order-details.jsx';
 
 import styles from '../home.module.css';
 
 export const Home = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
 
-  const selectedIngredient = useSelector(selectCurrentIngredient);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [currentOrder, setCurrentOrder] = useState(null);
+  // const selectedIngredient = useSelector(selectCurrentIngredient);
 
   const bun = useSelector(selectBun);
   const filling = useSelector(selectFilling);
 
   // Модалка ингредиента
   const handleIngredientClick = (ingredient) => {
-    dispatch(setIngredientDetails(ingredient));
+    // dispatch(setIngredientDetails(ingredient));
+    navigate(`/ingredients/${ingredient._id}`, {
+      state: { background: location },
+    });
   };
 
-  const closeIngredientModal = () => {
-    dispatch(clearIngredientDetails());
-  };
+  // const closeIngredientModal = () => {
+  //   dispatch(clearIngredientDetails());
+  // };
 
   // Модалка ордера
   const handleOrderClick = async () => {
@@ -52,18 +47,15 @@ export const Home = () => {
     const orderIds = [bun._id, ...filling.map((item) => item._id), bun._id];
     try {
       const response = await createOrder({ ingredients: orderIds }).unwrap();
-      setCurrentOrder(response.order.number);
-      setIsOrderModalOpen(true);
+      navigate(`/order/${response.order.number}`, {
+        state: { background: location },
+      });
+
       dispatch(clearConstructor()); //авто очистка после заказа
     } catch (err) {
       console.error('Ошибка при создании заказа:', err);
       alert('Ошибка при создании заказа: ' + err.message);
     }
-  };
-
-  const closeOrderModal = () => {
-    setIsOrderModalOpen(false);
-    setCurrentOrder(null);
   };
 
   return (
@@ -78,7 +70,7 @@ export const Home = () => {
           onOrderButtonClick={handleOrderClick}
         />
       </main>
-      {selectedIngredient && (
+      {/* {selectedIngredient && (
         <Modal title="Детали ингредиента" onClose={closeIngredientModal}>
           <IngredientDetail ingredient={selectedIngredient} />
         </Modal>
@@ -88,7 +80,7 @@ export const Home = () => {
         <Modal onClose={closeOrderModal}>
           <OrderDetails orderNumber={currentOrder} />
         </Modal>
-      )}
+      )} */}
     </div>
   );
 };

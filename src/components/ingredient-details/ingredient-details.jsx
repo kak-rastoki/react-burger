@@ -1,7 +1,23 @@
+import { Preloader } from '@krgaa/react-developer-burger-ui-components';
+import { useParams } from 'react-router-dom';
+
+import { useGetIngredientsQuery } from '@/services/api/ingredientsApi';
+
 import styles from './ingredient-detail.module.css';
 
-export const IngredientDetail = ({ ingredient }) => {
-  if (!ingredient) return null;
+export const IngredientDetail = () => {
+  const { id } = useParams();
+  const { data, isLoading } = useGetIngredientsQuery();
+  const ingredients = data?.data || [];
+  const ingredient = ingredients.find((item) => item._id === id);
+
+  if (isLoading) {
+    return <Preloader />;
+  }
+
+  if (!ingredient) {
+    return <p className="text text_type_main-medium mt-10">Ингредиент не найден</p>;
+  }
 
   return (
     <div className={styles.details}>

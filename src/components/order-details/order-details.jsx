@@ -1,12 +1,15 @@
 import { CheckMarkIcon } from '@krgaa/react-developer-burger-ui-components';
+import { useParams } from 'react-router-dom';
 
 import styles from './order-details.module.css';
 
-export const OrderDetails = ({ orderNumber }) => {
+export const OrderDetails = () => {
+  const { id } = useParams();
+
   return (
     <div className={styles.order}>
       <p className={`${styles.glow} text text_type_digits-large`}>
-        {String(orderNumber).padStart(6, '0')}
+        {String(id).padStart(6, '0')}
       </p>
       <p className="text text_type_main-medium">идентификатор заказа</p>
 
