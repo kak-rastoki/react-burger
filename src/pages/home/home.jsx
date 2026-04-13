@@ -12,7 +12,7 @@ import {
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
 
-import styles from '../home.module.css';
+import styles from '../home/home.module.css';
 
 export const Home = () => {
   const location = useLocation();

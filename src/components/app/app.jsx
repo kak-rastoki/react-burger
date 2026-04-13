@@ -1,7 +1,10 @@
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
+import { ForgotPassword } from '@/pages/forgot-password/forgot-password';
 import { Login } from '@/pages/login/login';
 import { NotFound } from '@/pages/not-found/not-found';
+import { Register } from '@/pages/register/register';
+import { ResetPassword } from '@/pages/reset-password/reset-password';
 // import { Home, Login, Register, ForgotPassword, ResetPassword, Profile, Feed, NotFound } from '@pages';
 import { Home } from '@pages/home/home';
 
@@ -37,10 +40,12 @@ export const App = () => {
         />
 
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
         {/*
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-           <Route path="/reset-password" element={<ResetPassword />} />
+
           <Route path="/profile/*" element={<Profile />} />
           <Route path="/feed" element={<Feed />} /> */}
 
