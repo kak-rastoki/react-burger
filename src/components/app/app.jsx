@@ -6,6 +6,7 @@ import { ForgotPassword } from '@/pages/forgot-password/forgot-password';
 import { Login } from '@/pages/login/login';
 import { NotFound } from '@/pages/not-found/not-found';
 import { Profile } from '@/pages/profile/profile';
+import { ProfileOrders } from '@/pages/profile/profile-orders';
 import { Register } from '@/pages/register/register';
 import { ResetPassword } from '@/pages/reset-password/reset-password';
 import { useGetUserQuery } from '@/services/api/authApi';
@@ -65,7 +66,9 @@ export const App = () => {
         <Route path="*" element={<NotFound />} />
 
         {/* protected */}
-        <Route path="/profile" element={<OnlyAuth component={<Profile />} />}></Route>
+        <Route path="/profile" element={<OnlyAuth component={<Profile />} />}>
+          <Route path="orders" element={<ProfileOrders />} />
+        </Route>
       </Routes>
 
       {/* модальныек окна */}
