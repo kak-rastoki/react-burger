@@ -4,7 +4,9 @@ import {
   Button,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { useRegisterMutation } from '@/services/api/authApi';
 
 import styles from './register.module.css';
 
@@ -15,15 +17,24 @@ export const Register = () => {
     password: '',
   });
 
+  const navigate = useNavigate();
+
+  const [register, { isLoading, error }] = useRegisterMutation();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Позже здесь будет dispatch(register(values))
-    console.log('Данные регистрации:', values);
+
+    try {
+      await register(values).unwrap();
+      navigate('/', { replace: true });
+    } catch (err) {
+      console.error('Ошибка регистрации:', err);
+    }
   };
 
   return (
@@ -58,8 +69,10 @@ export const Register = () => {
           extraClass="mt-6"
         />
         <Button htmlType="submit" type="primary" size="large" extraClass="mt-6 mb-20">
-          Зарегистрироваться
+          {isLoading ? 'Создаем аккаунт...' : 'Зарегистрироваться'}
         </Button>
+
+        {error && <p style={{ color: 'red' }}>{error.data?.message}</p>}
       </form>
 
       <div className={styles.links}>

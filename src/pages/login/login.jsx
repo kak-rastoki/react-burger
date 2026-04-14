@@ -4,20 +4,31 @@ import {
   Button,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { useLoginMutation } from '@/services/api/authApi';
 
 import styles from './login.module.css';
 
 export const Login = () => {
   const [values, setValues] = useState({ email: '', password: '' });
+  const [login, { isLoading, error }] = useLoginMutation();
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Данные для входа:', values);
+
+    try {
+      await login(values).unwrap();
+      navigate('/', { replace: true });
+    } catch (err) {
+      console.error('Ошибка входа:', err);
+    }
   };
 
   return (
@@ -45,8 +56,13 @@ export const Login = () => {
         />
 
         <Button htmlType="submit" type="primary" size="large" extraClass="mt-6 mb-20">
-          Войти
+          {isLoading ? 'Проверка данных...' : 'Войти'}
         </Button>
+        {error && (
+          <p style={{ color: 'red', marginTop: '10px' }}>
+            {error.data?.message || 'Ошибка входа'}
+          </p>
+        )}
       </form>
 
       <div className={styles.links}>
