@@ -1,139 +1,186 @@
-// import { useState } from 'react';
-// import { NavLink, Outlet, useLocation } from 'react-router-dom';
-// import { useDispatch, useSelector } from 'react-redux';
-// import {
-//   Input,
-//   PasswordInput,
-//   Button
-// } from '@krgaa/react-developer-burger-ui-components';
+import {
+  Input,
+  PasswordInput,
+  Button,
+} from '@krgaa/react-developer-burger-ui-components';
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
-// import { logout } from '@/services/user/actions';
-// import { selectUser } from '@/services/user/slice';
-// import styles from './profile.module.css';
+import { useLogoutMutation, useUpdateUserMutation } from '@/services/api/authApi';
+import { selectUser } from '@/services/user/userSlice';
 
-// export const Profile = () => {
-//   const dispatch = useDispatch();
-//   const location = useLocation();
-//   const user = useSelector(selectUser);
+import styles from './profile.module.css';
 
-//   const [values, setValues] = useState({
-//     name: user?.name || '',
-//     email: user?.email || '',
-//     password: ''
-//   });
+export const Profile = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const user = useSelector(selectUser);
+  const [logoutApi] = useLogoutMutation();
+  const [updateUser, { isLoading: isUpdating, error: updateError }] =
+    useUpdateUserMutation();
+  const [showSuccess, setShowSuccess] = useState(false);
 
-//   const isFormChanged = values.name !== user?.name || values.email !== user?.email || values.password !== '';
+  const [values, setValues] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    password: '',
+  });
 
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setValues({ ...values, [name]: value });
-//   };
+  useEffect(() => {
+    setValues({
+      name: user?.name || '',
+      email: user?.email || '',
+      password: '',
+    });
+  }, [user]);
 
-//   const handleCancel = () => {
-//     setValues({
-//       name: user?.name || '',
-//       email: user?.email || '',
-//       password: ''
-//     });
-//   };
+  const isFormChanged =
+    values.name !== user?.name || values.email !== user?.email || values.password !== '';
 
-//   const handleLogout = () => {
-//     dispatch(logout());
-//   };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setValues({ ...values, [name]: value });
+  };
 
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     console.log('Отправляем обновленные данные:', values);
-//   };
+  const handleCancel = () => {
+    setValues({
+      name: user?.name || '',
+      email: user?.email || '',
+      password: '',
+    });
+  };
 
-//   return (
-//     <main className={styles.container}>
-//       <div className={styles.wrapper}>
+  const handleLogout = async () => {
+    try {
+      await logoutApi().unwrap();
+      navigate('/login', { replace: true });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-//         {/* Левая панель: Навигация */}
-//         <nav className={styles.nav}>
-//           <NavLink
-//             to="/profile"
-//             end // Чтобы /profile/orders не подсвечивал этот пункт
-//             className={({ isActive }) =>
-//               `${styles.link} text text_type_main-medium ${isActive ? styles.link_active : 'text_color_inactive'}`
-//             }
-//           >
-//             Профиль
-//           </NavLink>
-//           <NavLink
-//             to="/profile/orders"
-//             className={({ isActive }) =>
-//               `${styles.link} text text_type_main-medium ${isActive ? styles.link_active : 'text_color_inactive'}`
-//             }
-//           >
-//             История заказов
-//           </NavLink>
-//           <button
-//             onClick={handleLogout}
-//             className={`${styles.link} ${styles.logoutButton} text text_type_main-medium text_color_inactive`}
-//           >
-//             Выход
-//           </button>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await updateUser(values).unwrap();
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+    } catch (err) {
+      console.error('Ошибка при обновлении:', err);
+    }
+  };
 
-//           <p className="text text_type_main-default text_color_inactive mt-20 opacity-40">
-//             В этом разделе вы можете изменить свои персональные данные
-//           </p>
-//         </nav>
+  return (
+    <main className={styles.container}>
+      <div className={styles.wrapper}>
+        <nav className={styles.nav}>
+          <NavLink
+            to="/profile"
+            end
+            className={({ isActive }) =>
+              `${styles.link} text text_type_main-medium ${isActive ? styles.link_active : 'text_color_inactive'}`
+            }
+          >
+            Профиль
+          </NavLink>
+          <NavLink
+            to="/profile/orders"
+            className={({ isActive }) =>
+              `${styles.link} text text_type_main-medium ${isActive ? styles.link_active : 'text_color_inactive'}`
+            }
+          >
+            История заказов
+          </NavLink>
+          <button
+            onClick={handleLogout}
+            className={`${styles.link} ${styles.logoutButton} text text_type_main-medium text_color_inactive`}
+          >
+            Выход
+          </button>
 
-//         {/* Правая панель: Контент */}
-//         <div className={styles.content}>
-//           {/* Если URL ровно /profile — показываем форму.
-//               Если /profile/orders — Outlet отрендерит страницу заказов */}
-//           {location.pathname === '/profile' ? (
-//             <form className={styles.form} onSubmit={handleSubmit}>
-//               <Input
-//                 type="text"
-//                 placeholder="Имя"
-//                 onChange={handleChange}
-//                 value={values.name}
-//                 name="name"
-//                 icon="EditIcon" // Иконка редактирования из библиотеки
-//                 extraClass="mb-6"
-//               />
-//               <Input
-//                 type="email"
-//                 placeholder="Логин"
-//                 onChange={handleChange}
-//                 value={values.email}
-//                 name="email"
-//                 icon="EditIcon"
-//                 extraClass="mb-6"
-//               />
-//               <PasswordInput
-//                 onChange={handleChange}
-//                 value={values.password}
-//                 name="password"
-//                 icon="EditIcon"
-//               />
+          <p className="text text_type_main-default text_color_inactive mt-20 opacity-40">
+            В этом разделе вы можете изменить свои персональные данные
+          </p>
+        </nav>
 
-//               {isFormChanged && (
-//                 <div className={`${styles.buttons} mt-6`}>
-//                   <Button
-//                     htmlType="button"
-//                     type="secondary"
-//                     size="medium"
-//                     onClick={handleCancel}
-//                   >
-//                     Отмена
-//                   </Button>
-//                   <Button htmlType="submit" type="primary" size="medium">
-//                     Сохранить
-//                   </Button>
-//                 </div>
-//               )}
-//             </form>
-//           ) : (
-//             <Outlet />
-//           )}
-//         </div>
+        <div className={styles.content}>
+          {location.pathname === '/profile' ? (
+            <form className={styles.form} onSubmit={handleSubmit}>
+              <Input
+                type="text"
+                placeholder="Имя"
+                onChange={handleChange}
+                value={values.name}
+                name="name"
+                icon="EditIcon"
+                extraClass="mb-6"
+                disabled={isUpdating}
+              />
+              <Input
+                type="email"
+                placeholder="Логин"
+                onChange={handleChange}
+                value={values.email}
+                name="email"
+                icon="EditIcon"
+                extraClass="mb-6"
+                disabled={isUpdating}
+              />
+              <PasswordInput
+                onChange={handleChange}
+                value={values.password}
+                name="password"
+                icon="EditIcon"
+                disabled={isUpdating}
+              />
 
-//       </div>
-//     </main>
-//   );
-// };
+              {isFormChanged && (
+                <div className={`${styles.buttons} mt-6`}>
+                  <Button
+                    htmlType="button"
+                    type="secondary"
+                    size="medium"
+                    onClick={handleCancel}
+                    disabled={isUpdating}
+                  >
+                    Отмена
+                  </Button>
+                  <Button
+                    htmlType="submit"
+                    type="primary"
+                    size="medium"
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? 'Сохраняем...' : 'Сохранить'}
+                  </Button>
+                </div>
+              )}
+
+              {showSuccess && (
+                <p
+                  style={{ color: '#00cccc', textAlign: 'right' }}
+                  className="text text_type_main-default mt-4"
+                >
+                  Данные успешно обновлены!
+                </p>
+              )}
+              {updateError && (
+                <p
+                  style={{ color: '#e52b1a', textAlign: 'right' }}
+                  className="text text_type_main-default mt-4"
+                >
+                  Ошибка: {updateError.data?.message || 'Не удалось сохранить'}
+                </p>
+              )}
+            </form>
+          ) : (
+            <Outlet />
+          )}
+        </div>
+      </div>
+    </main>
+  );
+};

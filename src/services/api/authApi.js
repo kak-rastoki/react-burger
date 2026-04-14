@@ -52,7 +52,13 @@ export const authApi = createApi({
       //получить email и name юзера
       query: () => 'auth/user',
     }),
-
+    updateUser: builder.mutation({
+      query: (data) => ({
+        url: 'auth/user',
+        method: 'PATCH',
+        body: data,
+      }),
+    }),
     register: builder.mutation({
       // регистрация
       query: (data) => ({
@@ -108,5 +114,6 @@ export const {
   useGetUserQuery,
   useRegisterMutation,
   useLoginMutation,
+  useUpdateUserMutation,
   useLogoutMutation,
 } = authApi;
