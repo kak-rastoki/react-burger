@@ -2,6 +2,7 @@ import { Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useSelector } from 'react-redux';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
+import { Feed } from '@/pages/feed/feed';
 import { ForgotPassword } from '@/pages/forgot-password/forgot-password';
 import { Login } from '@/pages/login/login';
 import { NotFound } from '@/pages/not-found/not-found';
@@ -61,9 +62,11 @@ export const App = () => {
         />
         <Route
           path="/reset-password"
+          Ы
           element={<OnlyUnAuth component={<ResetPassword />} />}
         />
         <Route path="*" element={<NotFound />} />
+        <Route path="/feed" element={<Feed />} />
 
         {/* protected */}
         <Route path="/profile" element={<OnlyAuth component={<Profile />} />}>

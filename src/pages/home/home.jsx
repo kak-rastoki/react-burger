@@ -8,6 +8,7 @@ import {
   selectFilling,
   clearConstructor,
 } from '@/services/constructor/constructorSlice.js';
+import { selectUser } from '@/services/user/userSlice';
 // Экшены для выбранного ингредиента
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
@@ -18,6 +19,7 @@ export const Home = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
 
   const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
 
@@ -34,12 +36,13 @@ export const Home = () => {
     });
   };
 
-  // const closeIngredientModal = () => {
-  //   dispatch(clearIngredientDetails());
-  // };
-
   // Модалка ордера
   const handleOrderClick = async () => {
+    if (!user) {
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
     if (!bun) {
       alert('Заказ не может быть сформирован без булки');
       return;

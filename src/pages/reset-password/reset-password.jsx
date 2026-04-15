@@ -4,21 +4,37 @@ import {
   Button,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
+
+import { useResetPasswordMutation } from '@/services/api/authApi';
 
 import styles from './reset-password.module.css';
 
 export const ResetPassword = () => {
   const [values, setValues] = useState({ password: '', token: '' });
+  const navigate = useNavigate();
+  const [resetPassword, { isLoading, error }] = useResetPasswordMutation();
+
+  const wasOnForgotPage = localStorage.getItem('resetPasswordStep');
+
+  if (!wasOnForgotPage) {
+    return <Navigate to="/forgot-password" replace />;
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Сброс пароля с данными:', values);
+    try {
+      await resetPassword(values).unwrap();
+      localStorage.removeItem('resetPasswordStep');
+      navigate('/login');
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -45,8 +61,17 @@ export const ResetPassword = () => {
           extraClass="mt-6"
         />
 
+        {error && (
+          <p
+            className="text text_type_main-default mt-4"
+            style={{ color: '#e52b1a', textAlign: 'center' }}
+          >
+            {error.data?.message || 'Произошла ошибка, попробуйте еще раз'}
+          </p>
+        )}
+
         <Button htmlType="submit" type="primary" size="large" extraClass="mt-6 mb-20">
-          Сохранить
+          {isLoading ? 'Сохранить' : 'Данные сохраняются'}
         </Button>
       </form>
 
