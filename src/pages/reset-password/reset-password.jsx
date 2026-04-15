@@ -71,7 +71,7 @@ export const ResetPassword = () => {
         )}
 
         <Button htmlType="submit" type="primary" size="large" extraClass="mt-6 mb-20">
-          {isLoading ? 'Сохранить' : 'Данные сохраняются'}
+          {!isLoading ? 'Сохранить' : 'Данные сохраняются'}
         </Button>
       </form>
 
