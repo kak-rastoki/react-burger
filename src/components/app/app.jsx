@@ -1,97 +1,102 @@
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Preloader } from '@krgaa/react-developer-burger-ui-components';
+import { useSelector } from 'react-redux';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
-// Экшены для работы с начинками и булками
-import {
-  selectBun,
-  selectFilling,
-  clearConstructor,
-} from '@/services/constructor/constructorSlice.js';
-// Экшены для выбранного ингредиента
-import {
-  setIngredientDetails,
-  clearIngredientDetails,
-  selectCurrentIngredient,
-} from '@/services/ingredient/ingredientSlice';
-import { AppHeader } from '@components/app-header/app-header';
-import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
-import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
+import { Feed } from '@/pages/feed/feed';
+import { ForgotPassword } from '@/pages/forgot-password/forgot-password';
+import { Login } from '@/pages/login/login';
+import { NotFound } from '@/pages/not-found/not-found';
+import { Profile } from '@/pages/profile/profile';
+import { ProfileOrders } from '@/pages/profile/profile-orders';
+import { Register } from '@/pages/register/register';
+import { ResetPassword } from '@/pages/reset-password/reset-password';
+import { useGetUserQuery } from '@/services/api/authApi';
+import { selectIsAuthChecked } from '@/services/user/userSlice';
+import { OnlyAuth, OnlyUnAuth } from '@components/protected-route/protected-route';
+// import { Home, Login, Register, ForgotPassword, ResetPassword, Profile, Feed, NotFound } from '@pages';
+import { Home } from '@pages/home/home';
 
-import { useCreateOrderMutation } from '../../services/api/ingredientsApi';
-import { IngredientDetail } from '../ingredient-details/ingredient-details.jsx';
-import { Modal } from '../modal/modal.jsx';
-import { OrderDetails } from '../order-details/order-details.jsx';
-
-import styles from './app.module.css';
+import { AppHeader } from '../app-header/app-header';
+import { IngredientDetail } from '../ingredient-details/ingredient-details';
+import { Modal } from '../modal/modal';
+import { OrderDetails } from '../order-details/order-details';
 
 export const App = () => {
-  const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const background = location.state && location.state.background;
 
-  const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
+  useGetUserQuery();
+  const isAuthChecked = useSelector(selectIsAuthChecked);
 
-  const selectedIngredient = useSelector(selectCurrentIngredient);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [currentOrder, setCurrentOrder] = useState(null);
+  if (!isAuthChecked) {
+    return <Preloader />;
+  }
 
-  const bun = useSelector(selectBun);
-  const filling = useSelector(selectFilling);
-
-  // Модалка ингредиента
-  const handleIngredientClick = (ingredient) => {
-    dispatch(setIngredientDetails(ingredient));
-  };
-
-  const closeIngredientModal = () => {
-    dispatch(clearIngredientDetails());
-  };
-
-  // Модалка ордера
-  const handleOrderClick = async () => {
-    if (!bun) {
-      alert('Заказ не может быть сформирован без булки');
-      return;
-    }
-    const orderIds = [bun._id, ...filling.map((item) => item._id), bun._id];
-    try {
-      const response = await createOrder({ ingredients: orderIds }).unwrap();
-      setCurrentOrder(response.order.number);
-      setIsOrderModalOpen(true);
-      dispatch(clearConstructor()); //авто очистка после заказа
-    } catch (err) {
-      console.error('Ошибка при создании заказа:', err);
-      alert('Ошибка при создании заказа: ' + err.message);
-    }
-  };
-
-  const closeOrderModal = () => {
-    setIsOrderModalOpen(false);
-    setCurrentOrder(null);
+  const handleModalClose = () => {
+    navigate(-1);
   };
 
   return (
-    <div className={styles.app}>
+    <div className=" style.app">
       <AppHeader />
-
-      <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
-        Соберите бургер
-      </h1>
-      <main className={`${styles.main} pl-5 pr-5 `}>
-        <BurgerIngredients onIngredietnsClick={handleIngredientClick} />
-        <BurgerConstructor
-          isOrderLoading={isOrderLoading}
-          onOrderButtonClick={handleOrderClick}
+      <Routes location={background || location}>
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/ingredients/:id"
+          element={
+            <div style={{ marginTop: '100px' }}>
+              <h1 className="text text_type_main-large text_color_primary">
+                Детали ингредиента
+              </h1>
+              <IngredientDetail />
+            </div>
+          }
         />
-      </main>
-      {selectedIngredient && (
-        <Modal title="Детали ингредиента" onClose={closeIngredientModal}>
-          <IngredientDetail ingredient={selectedIngredient} />
-        </Modal>
-      )}
 
-      {isOrderModalOpen && (
-        <Modal onClose={closeOrderModal}>
-          <OrderDetails orderNumber={currentOrder} />
-        </Modal>
+        <Route path="/login" element={<OnlyUnAuth component={<Login />} />} />
+        <Route path="/register" element={<OnlyUnAuth component={<Register />} />} />
+        <Route
+          path="/forgot-password"
+          element={<OnlyUnAuth component={<ForgotPassword />} />}
+        />
+        <Route
+          path="/reset-password"
+          Ы
+          element={<OnlyUnAuth component={<ResetPassword />} />}
+        />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/feed" element={<Feed />} />
+
+        {/* protected */}
+        <Route path="/profile" element={<OnlyAuth component={<Profile />} />}>
+          <Route path="orders" element={<ProfileOrders />} />
+        </Route>
+      </Routes>
+
+      {/* модальныек окна */}
+      {background && (
+        <Routes>
+          <Route
+            path="/ingredients/:id"
+            element={
+              <Modal title="Детали ингредиента" onClose={handleModalClose}>
+                {' '}
+                <IngredientDetail />{' '}
+              </Modal>
+            }
+          />
+
+          <Route
+            path="/order/:id"
+            element={
+              <Modal title="Детали заказа" onClose={handleModalClose}>
+                {' '}
+                <OrderDetails />{' '}
+              </Modal>
+            }
+          />
+        </Routes>
       )}
     </div>
   );

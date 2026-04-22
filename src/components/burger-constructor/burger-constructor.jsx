@@ -21,6 +21,7 @@ import { ConstructorItem } from '../constructor-item/constructor-item';
 import styles from './burger-constructor.module.css';
 
 export const BurgerConstructor = ({ onOrderButtonClick, isOrderLoading }) => {
+  // const navigate = useNavigate();
   const dispatch = useDispatch();
   const constructorItems = useSelector(selectConstructorItems);
   const totalPrice = useSelector(selectTotalPrice);
@@ -58,7 +59,6 @@ export const BurgerConstructor = ({ onOrderButtonClick, isOrderLoading }) => {
       style={{ outline: isHover ? '2px dashed #8e4cff' : 'transparent' }}
       className={`${styles.burger_constructor} pt-10`}
     >
-      {/* 1. ВЕРХНЯЯ БУЛКА С ПРОВЕРКОЙ */}
       <div className={`${styles.bun} `}>
         {bun ? (
           <ConstructorElement
@@ -83,7 +83,6 @@ export const BurgerConstructor = ({ onOrderButtonClick, isOrderLoading }) => {
         )}
       </div>
 
-      {/* 2. НАЧИНКИ С ПРОВЕРКОЙ */}
       <div className={`${styles.notBuns} custom-scroll`}>
         {filling.length > 0 ? (
           filling.map((item, index) => (
@@ -99,7 +98,6 @@ export const BurgerConstructor = ({ onOrderButtonClick, isOrderLoading }) => {
         )}
       </div>
 
-      {/* 3. НИЖНЯЯ БУЛКА С ПРОВЕРКОЙ */}
       <div className={styles.bun}>
         {bun ? (
           <ConstructorElement
@@ -132,7 +130,7 @@ export const BurgerConstructor = ({ onOrderButtonClick, isOrderLoading }) => {
           size="medium"
           htmlType="button"
           onClick={onOrderButtonClick}
-          disabled={isOrderLoading || !bun} // 👈 Защита: нельзя заказать без булки
+          disabled={isOrderLoading || !bun}
         >
           {isOrderLoading ? 'Оформляем...' : 'Оформить заказ'}
         </Button>
