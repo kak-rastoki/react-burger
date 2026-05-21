@@ -141,7 +141,7 @@ export default defineConfig([
       parser: tseslint.parser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
-        project: './tsconfig.json',
+        // project: './tsconfig.json',
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
         warnOnUnsupportedTypeScriptVersion: false,
