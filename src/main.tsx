@@ -11,14 +11,19 @@ import { store } from './services/store';
 
 import './index.css';
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <Provider store={store}>
-      <DndProvider backend={HTML5Backend}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </DndProvider>
-    </Provider>
-  </StrictMode>
-);
+const container = document.getElementById('root');
+
+if (container) {
+  const root = createRoot(container);
+  root.render(
+    <StrictMode>
+      <Provider store={store}>
+        <DndProvider backend={HTML5Backend}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </DndProvider>
+      </Provider>
+    </StrictMode>
+  );
+}

@@ -55,6 +55,7 @@ export const ConstructorItem = ({
   return (
     <div
       ref={(node: HTMLDivElement | null): void => {
+        ref.current = node;
         drag(drop(node));
       }}
       className={styles.item}

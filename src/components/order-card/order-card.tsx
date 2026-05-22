@@ -45,7 +45,7 @@ export const OrderCard: React.FC<TOrderCardProps> = ({ order, showStatus = false
 
   return (
     <Link
-      to={`${location.pathname}/${order.number}`}
+      to={`${location.pathname}/${order._id}`}
       state={{ background: location }}
       className={styles.link}
     >
