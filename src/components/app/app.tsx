@@ -25,6 +25,7 @@ import { AppHeader } from '../app-header/app-header';
 import { IngredientDetail } from '../ingredient-details/ingredient-details';
 import { Modal } from '../modal/modal';
 import { OrderDetails } from '../order-details/order-details';
+import { OrderInfo } from '../order-info/order-info.tsx';
 
 import styles from './app.module.css';
 
@@ -79,10 +80,34 @@ export const App = (): React.ReactElement => {
           path="/reset-password"
           element={<OnlyUnAuth component={<ResetPassword />} />}
         />
+
         <Route path="/feed" element={<Feed />} />
+        <Route
+          path="/feed/:id"
+          element={
+            <div style={{ marginTop: '100px' }}>
+              <OrderInfo />
+            </div>
+          }
+        />
+
         <Route path="/profile" element={<OnlyAuth component={<Profile />} />}>
           <Route path="orders" element={<ProfileOrders />} />
         </Route>
+
+        <Route
+          path="/profile/orders/:id"
+          element={
+            <OnlyAuth
+              component={
+                <div style={{ marginTop: '100px' }}>
+                  <OrderInfo />
+                </div>
+              }
+            />
+          }
+        />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
 
@@ -102,6 +127,26 @@ export const App = (): React.ReactElement => {
               <Modal title="Детали заказа" onClose={handleModalClose}>
                 <OrderDetails />
               </Modal>
+            }
+          />
+          <Route
+            path="/feed/:id"
+            element={
+              <Modal title="Детали заказа" onClose={handleModalClose}>
+                <OrderInfo />
+              </Modal>
+            }
+          />
+          <Route
+            path="/profile/orders/:id"
+            element={
+              <OnlyAuth
+                component={
+                  <Modal title="Детали заказа" onClose={handleModalClose}>
+                    <OrderInfo />
+                  </Modal>
+                }
+              />
             }
           />
         </Routes>

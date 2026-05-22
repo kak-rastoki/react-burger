@@ -1,0 +1,78 @@
+.link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.card {
+  background: #1c1c21;
+  border: 1px solid transparent;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: #4c4cff;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+}
+
+.statusDone {
+  color: #00ecc7;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ingredientsList {
+  display: flex;
+  align-items: center;
+}
+
+.ingredientWrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  margin-right: -16px;
+  background: #131316;
+  border: 2px solid #1c1c21;
+  border-radius: 50%;
+}
+
+.image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgb(0 0 0 / 60%);
+  border-radius: 50%;
+}
+
+.price {
+  display: flex;
+  align-items: center;
+}
