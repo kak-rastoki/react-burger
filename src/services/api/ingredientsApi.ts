@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import Cookies from 'js-cookie';
 
 import API_URL from '../../utils/constants';
 
@@ -16,13 +17,23 @@ type TOrderResponse = {
     number: number;
   };
 };
+
 type TOrderData = {
   ingredients: string[];
 };
 
 export const ingredientsApi = createApi({
   reducerPath: 'ingredientsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: API_URL,
+    prepareHeaders: (headers) => {
+      const token = Cookies.get('accessToken');
+      if (token) {
+        headers.set('authorization', token);
+      }
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
     getIngredients: builder.query<TIngredientsResponse, void>({
       query: () => '/ingredients',
