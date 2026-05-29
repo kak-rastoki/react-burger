@@ -1,5 +1,69 @@
-.center {
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+
+
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-top: 40px;
+}
+
+.content {
+  display: flex;
+  gap: 60px;
+  margin-top: 20px;
+}
+
+.ordersList {
+  width: 600px;
+  max-height: 75vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.ordersList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ordersList::-webkit-scrollbar-track {
+  background: #131316;
+}
+
+.ordersList::-webkit-scrollbar-thumb {
+  background: #1c1c21;
+  border-radius: 4px;
+}
+
+.stats {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+}
+
+.board {
+  display: flex;
+  gap: 36px;
+}
+
+.statusColumn {
+  flex: 1;
+display: flex;
+  flex-direction: column;
+}
+
+.columnsContainer {
+  display: flex;
+  gap: 24px;
+  max-height: 35vh;
+  overflow-y: hidden;
+}
+.list {
+  padding: 0;
+  margin: 0;
 }

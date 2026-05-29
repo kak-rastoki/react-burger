@@ -109,10 +109,6 @@ export const Profile = (): ReactElement => {
           >
             Выход
           </button>
-
-          <p className="text text_type_main-default text_color_inactive mt-20 opacity-40">
-            В этом разделе вы можете изменить свои персональные данные
-          </p>
         </nav>
 
         <div className={styles.content}>

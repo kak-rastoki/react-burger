@@ -1,5 +1,5 @@
 declare const classNames: {
-  readonly overlay: 'overlay';
-  readonly overlayOpened: 'overlayOpened';
+  readonly overlay: "overlay";
+  readonly overlayOpened: "overlayOpened";
 };
 export default classNames;

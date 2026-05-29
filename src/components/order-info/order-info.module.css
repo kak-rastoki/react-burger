@@ -1,0 +1,105 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.number {
+  text-align: center;
+}
+
+.status {
+  font-weight: 400;
+}
+
+.statusDone {
+  color: #00ecc7;
+}
+
+.statusPending {
+  color: #f2f2f3;
+}
+
+.statusCreated {
+  color: #4c4cff;
+}
+
+.composition {
+  max-height: 312px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.composition::-webkit-scrollbar {
+  width: 8px;
+}
+
+.composition::-webkit-scrollbar-track {
+  background: #131316;
+}
+
+.composition::-webkit-scrollbar-thumb {
+  background: #1c1c21;
+  border-radius: 4px;
+}
+
+.list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.item:last-child {
+  margin-bottom: 0;
+}
+
+.ingredientInfo {
+  display: flex;
+  align-items: center;
+}
+.avatarWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #131316;
+  border: 2px solid #1c1c21;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.name {
+  max-width: 320px;
+  text-align: left;
+}
+
+.priceBlock {
+  display: flex;
+  align-items: center;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price {
+  display: flex;
+  align-items: center;
+}
