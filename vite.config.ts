@@ -1,18 +1,15 @@
 import react from '@vitejs/plugin-react';
 import { checker } from 'vite-plugin-checker';
-import readableClassnames from 'vite-plugin-readable-classnames';
 import sassDts from 'vite-plugin-sass-dts';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, configDefaults } from 'vitest/config';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     checker({
       typescript: true,
     }),
     react(),
-    // readableClassnames(),
     sassDts({
       enabledMode: ['development'],
       esmExport: true,
@@ -20,10 +17,19 @@ export default defineConfig({
     tsconfigPaths(),
   ],
   base: '',
+  optimizeDeps: {
+    include: [
+      '@reduxjs/toolkit/query/react',
+      '@reduxjs/toolkit',
+      'react-redux',
+      'js-cookie'
+    ],
+  },
   test: {
-    globals: true,
     environment: 'jsdom',
-    setupFiles: ['./vitest-setup.js'],
+    setupFiles: './src/setupTests.ts',
+    globals: true,
+    exclude: [...configDefaults.exclude, 'e2e/**'],
   },
   server: {
     open: true,
