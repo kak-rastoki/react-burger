@@ -4,16 +4,12 @@ import { describe, it, expect } from 'vitest';
 import ingredientReducer, {
   setIngredientDetails,
   clearIngredientDetails,
+  initialState,
 } from './ingredientSlice';
 
 import type { TIngredient } from '@/utils/baseTypes';
 
 describe('ingredientSlice reducer', () => {
-  // Начальное состояние стейта
-  const initialState = {
-    currentIngredient: null,
-  };
-
   const mockIngredient: TIngredient = {
     _id: '1',
     name: 'Краторная булка N-200i',

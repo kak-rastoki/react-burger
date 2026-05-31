@@ -7,16 +7,12 @@ import constructorReducer, {
   removeFilling,
   moveFilling,
   clearConstructor,
+  initialState,
 } from './constructorSlice';
 
 import type { TIngredient } from '@/utils/baseTypes';
 
 describe('burgerConstructor reducer', () => {
-  const initialState = {
-    bun: null,
-    filling: [],
-  };
-
   const mockBun: TIngredient = {
     _id: '1',
     name: 'Краторная булка N-200i',

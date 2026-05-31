@@ -1,16 +1,11 @@
 // ТЕСТЫ СЛАЙСА ПОЛЬЗОВАТЕЛЯ
 import { describe, it, expect } from 'vitest';
 
-import userReducer, { setAuthChecked, setUser } from './userSlice';
+import userReducer, { setAuthChecked, setUser, initialState } from './userSlice';
 
 import type { TUser } from '@/utils/baseTypes';
 
 describe('userSlice reducer', () => {
-  const initialState = {
-    user: null,
-    isAuthChecked: false,
-  };
-
   const mockUser: TUser = {
     email: 'space-burger@yandex.ru',
     name: 'Космический Космонавт',

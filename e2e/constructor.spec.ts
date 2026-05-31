@@ -22,7 +22,7 @@ test.describe('Страница Конструктор', () => {
       window.localStorage.setItem('refreshToken', 'mock-refresh-token');
     });
 
-    await page.goto('http://localhost:5173');
+    await page.goto('/');
   });
 
   test('Полный путь пользователя -> сборка бургера, просмотр ингредиента и оформление заказа', async ({ page }) => {
