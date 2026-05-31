@@ -11,7 +11,7 @@ type TConstructorState = {
   filling: TIngredient[];
 };
 
-const initialState: TConstructorState = {
+export const initialState: TConstructorState = {
   bun: null,
   filling: [],
 };

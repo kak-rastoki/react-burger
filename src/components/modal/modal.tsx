@@ -14,14 +14,13 @@ type TModalProps = {
   onClose: () => void;
 };
 
-const modalRoot: HTMLElement | null = document.getElementById('modals');
-
 export const Modal = ({
   children,
   title,
   onClose,
 }: TModalProps): ReactElement | null => {
   const [isOpened, setIsOpened] = useState<boolean>(false);
+  const modalRoot = document.getElementById('modals');
 
   useEffect((): (() => void) => {
     const timeoutId: ReturnType<typeof setTimeout> = setTimeout(
